@@ -6,12 +6,21 @@
 ### SDXL Prompt Styler Advanced
 ![SDXL Prompt Styler Advanced Screenshot](examples/sdxl_prompt_styler_advanced.png)
 
+### multiple styler combinations
+![image](https://github.com/hben35096/sdxl_prompt_styler/assets/139383150/663d6b87-a60a-4755-a044-80edbb596acd)
+
 SDXL Prompt Styler is a node that enables you to style prompts based on predefined templates stored in multiple JSON files. The node specifically replaces a {prompt} placeholder in the 'prompt' field of each template with provided positive text.
 
 The node also effectively manages negative prompts. If negative text is provided, the node combines this with the 'negative_prompt' field from the template. If no negative text is supplied, the system defaults to using the 'negative_prompt' from the JSON template. This flexibility enables the creation of a diverse and specific range of negative prompts.
 
 ## Changelog
 This section details the updates and new features committed over time, organized chronologically with the most recent changes at the top.
+
+### Commit date (2023-11-13)
+
+#### New Features
+Add multiple styler combinations
+* **StylerOut**: New node, Can arbitrarily increase the number of styles
 
 ### Commit date (2023-08-27)
 
