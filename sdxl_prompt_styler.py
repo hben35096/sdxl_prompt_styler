@@ -205,6 +205,51 @@ def read_sdxl_templates_replace_and_combine_advanced(json_data, template_name, p
         return positive_prompt_g, positive_prompt_l, f"{positive_prompt_g} . {positive_prompt_l}", negative_prompt, negative_prompt, negative_prompt
 
 
+class StylerOut:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        current_directory = os.path.dirname(os.path.realpath(__file__))
+        cls.json_data, styles = load_styles_from_directory(current_directory)
+        
+        return {
+            "required": {
+                "style": ((styles), ),
+            },
+            "optional": {
+                "styler_input" : ("STYLER",),
+            }
+        }
+
+    RETURN_TYPES = ('STYLER',)
+    RETURN_NAMES = ('styler_out',)
+    FUNCTION = 'prompt_styler'
+    CATEGORY = 'utils'
+
+    def prompt_styler(cls, style, styler_input=(None, None)):
+        # Process and combine prompts in templates
+        # The function replaces the positive prompt placeholder in the template,
+        # and combines the negative prompt with the template's negative prompt, if they exist.
+        (positive_styled, negative_styled) = styler_input
+        text_positive_styled, text_negative_styled = read_sdxl_templates_replace_and_combine(cls.json_data, style, "", "")
+
+        if positive_styled is not None:
+            return_positive = ', '.join(filter(None, [positive_styled, text_positive_styled]))
+        else:
+            return_positive = text_positive_styled
+
+        if negative_styled is not None:
+            return_negative = ', '.join(filter(None, [negative_styled, text_negative_styled]))
+        else:
+            return_negative = text_negative_styled
+
+        styler_out = (return_positive, return_negative)
+
+        return styler_out,
+
+
 class SDXLPromptStyler:
 
     def __init__(self):
@@ -222,6 +267,9 @@ class SDXLPromptStyler:
                 "style": ((styles), ),
                 "log_prompt": (["No", "Yes"], {"default":"No"}),
             },
+            "optional": {
+                "styler_input" : ("STYLER",),
+            }
         }
 
     RETURN_TYPES = ('STRING','STRING',)
@@ -229,22 +277,36 @@ class SDXLPromptStyler:
     FUNCTION = 'prompt_styler'
     CATEGORY = 'utils'
 
-    def prompt_styler(self, text_positive, text_negative, style, log_prompt):
+    def prompt_styler(self, text_positive, text_negative, style, log_prompt, styler_input=(None,None)):
         # Process and combine prompts in templates
         # The function replaces the positive prompt placeholder in the template,
         # and combines the negative prompt with the template's negative prompt, if they exist.
+        (positive_styled, negative_styled ) = styler_input
+
+
         text_positive_styled, text_negative_styled = read_sdxl_templates_replace_and_combine(self.json_data, style, text_positive, text_negative)
- 
+
+        if positive_styled is not None:
+            return_positive = ', '.join(filter(None, [positive_styled, text_positive_styled]))
+        else:
+            return_positive = text_positive_styled
+
+        if negative_styled is not None:
+            return_negative = ', '.join(filter(None, [negative_styled, text_negative_styled]))
+        else:
+            return_negative = text_negative_styled
+
         # If logging is enabled (log_prompt is set to "Yes"), 
         # print the style, positive and negative text, and positive and negative prompts to the console
         if log_prompt == "Yes":
             print(f"style: {style}")
             print(f"text_positive: {text_positive}")
             print(f"text_negative: {text_negative}")
-            print(f"text_positive_styled: {text_positive_styled}")
-            print(f"text_negative_styled: {text_negative_styled}")
+            print(f"return_positive: {return_positive}")
+            print(f"return_negative: {return_negative}")
 
-        return text_positive_styled, text_negative_styled
+
+        return return_positive, return_negative
     
 class SDXLPromptStylerAdvanced:
 
@@ -296,11 +358,13 @@ class SDXLPromptStylerAdvanced:
 
 
 NODE_CLASS_MAPPINGS = {
+    "StylerOut": StylerOut,
     "SDXLPromptStyler": SDXLPromptStyler,
     "SDXLPromptStylerAdvanced": SDXLPromptStylerAdvanced,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    "StylerOut": "StylerOut",
     "SDXLPromptStyler": "SDXL Prompt Styler",
     "SDXLPromptStylerAdvanced": "SDXL Prompt Styler Advanced",
 }
