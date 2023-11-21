@@ -234,14 +234,19 @@ class StylerOut:
         # and combines the negative prompt with the template's negative prompt, if they exist.
         (positive_styled, negative_styled) = styler_input
         text_positive_styled, text_negative_styled = read_sdxl_templates_replace_and_combine(cls.json_data, style, "", "")
+        #text_positive_styled, text_negative_styled = read_sdxl_templates_replace_and_combine(cls.json_data, style, "", "")
 
         if positive_styled is not None:
-            return_positive = ', '.join(filter(None, [positive_styled, text_positive_styled]))
+            # 改成换行的分割方式
+            return_positive = f"{text_positive_styled}\n{positive_styled}".strip()
+            #return_positive = ', '.join(filter(None, [positive_styled, text_positive_styled]))
         else:
             return_positive = text_positive_styled
 
         if negative_styled is not None:
-            return_negative = ', '.join(filter(None, [negative_styled, text_negative_styled]))
+            # 改成换行的分割方式
+            return_negative = f"{text_negative_styled}\n{negative_styled}".strip()
+            #return_negative = ', '.join(filter(None, [negative_styled, text_negative_styled]))
         else:
             return_negative = text_negative_styled
 
@@ -287,12 +292,16 @@ class SDXLPromptStyler:
         text_positive_styled, text_negative_styled = read_sdxl_templates_replace_and_combine(self.json_data, style, text_positive, text_negative)
 
         if positive_styled is not None:
-            return_positive = ', '.join(filter(None, [positive_styled, text_positive_styled]))
+            # 改成换行的分割方式
+            return_positive = f"{text_positive_styled}\n{positive_styled}".strip()
+            #return_positive = ', '.join(filter(None, [positive_styled, text_positive_styled]))
         else:
             return_positive = text_positive_styled
 
         if negative_styled is not None:
-            return_negative = ', '.join(filter(None, [negative_styled, text_negative_styled]))
+            # 改成换行的分割方式
+            return_negative = f"{text_negative_styled}\n{negative_styled}".strip()
+            #return_negative = ', '.join(filter(None, [negative_styled, text_negative_styled]))
         else:
             return_negative = text_negative_styled
 
